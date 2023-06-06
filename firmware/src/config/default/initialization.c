@@ -46,8 +46,8 @@
 #include "configuration.h"
 #include "definitions.h"
 #include "device.h"
-
-
+#include "peripheral/port/plib_port.h"
+#include "../../gfx_mono/gfx_definitions.h"
 
 // ****************************************************************************
 // ****************************************************************************
@@ -474,6 +474,8 @@ void SYS_Initialize ( void* data )
 
     EVSYS_Initialize();
 
+    SERCOM0_SPI_Initialize();
+
 
 
    /* Initialize the MIIM Driver Instance 0*/
@@ -496,12 +498,16 @@ void SYS_Initialize ( void* data )
 
 
     CRYPT_WCCB_Initialize();
-
+     
     APP_Initialize();
 
-
+  
     NVIC_Initialize();
 
+    gfx_mono_ssd1306_init();
+    gfx_mono_print_scroll("LAN867x PLCA Node: %d",DRV_ETHPHY_PLCA_LOCAL_NODE_ID); 
+    gfx_mono_print_scroll("%s",TCPIP_NETWORK_DEFAULT_MAC_ADDR_IDX0); 
+    gfx_mono_print_scroll("%s",TCPIP_NETWORK_DEFAULT_IP_ADDRESS_IDX0);        
     /* MISRAC 2012 deviation block end */
 }
 

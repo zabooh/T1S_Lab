@@ -28,6 +28,9 @@
 // *****************************************************************************
 
 #include "app.h"
+#include "config/default/peripheral/port/plib_port.h"
+#include "config/default/peripheral/sercom/usart/plib_sercom1_usart.h"
+#include "gfx_mono/gfx_definitions.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -48,7 +51,7 @@
     This structure should be initialized by the APP_Initialize function.
 
     Application strings and buffers are be defined outside this structure.
-*/
+ */
 
 APP_DATA appData;
 
@@ -59,7 +62,7 @@ APP_DATA appData;
 // *****************************************************************************
 
 /* TODO:  Add any necessary callback functions.
-*/
+ */
 
 // *****************************************************************************
 // *****************************************************************************
@@ -69,7 +72,7 @@ APP_DATA appData;
 
 
 /* TODO:  Add any necessary local functions.
-*/
+ */
 
 
 // *****************************************************************************
@@ -86,8 +89,7 @@ APP_DATA appData;
     See prototype in app.h.
  */
 
-void APP_Initialize ( void )
-{
+void APP_Initialize(void) {
     /* Place the App state machine in its initial state. */
     appData.state = APP_STATE_INIT;
 
@@ -98,7 +100,6 @@ void APP_Initialize ( void )
      */
 }
 
-
 /******************************************************************************
   Function:
     void APP_Tasks ( void )
@@ -107,20 +108,56 @@ void APP_Initialize ( void )
     See prototype in app.h.
  */
 
-void APP_Tasks ( void )
-{
+void APP_Tasks(void) {
+
+    {
+        static int old_but1 = 0;
+        int temp_but1 = BUTTON1_Get();
+        if (temp_but1 && !old_but1) {
+            LED1_Set();
+        }
+        if (!temp_but1 && old_but1) {
+            LED1_Clear();
+            SERCOM1_USART_Virtual_Receive("iperf -s\n");
+            gfx_mono_print_scroll("iperf TCP server");
+        }
+        old_but1 = temp_but1;
+
+        static int old_but2 = 0;
+        int temp_but2 = BUTTON2_Get();
+        if (temp_but2 && !old_but2) {
+            LED2_Set();
+        }
+        if (!temp_but2 && old_but2) {
+            LED2_Clear();
+            SERCOM1_USART_Virtual_Receive("iperf -s -u\n");
+            gfx_mono_print_scroll("iperf UDP server");
+        }
+        old_but2 = temp_but2;
+
+        static int old_but3 = 0;
+        int temp_but3 = BUTTON3_Get();
+        if (temp_but3 && !old_but3) {
+            LED3_Set();
+        }
+        if (!temp_but3 && old_but3) {
+            LED3_Clear();
+            SERCOM1_USART_Virtual_Receive("iperfk\n");
+            gfx_mono_print_scroll("iperf kill server");
+        }
+        old_but3 = temp_but3;
+    }
+
 
     /* Check the application's current state. */
-    switch ( appData.state )
-    {
-        /* Application's initial state. */
+    switch (appData.state) {
+            /* Application's initial state. */
         case APP_STATE_INIT:
         {
             bool appInitialized = true;
 
 
-            if (appInitialized)
-            {
+            if (appInitialized) {
 
                 appData.state = APP_STATE_SERVICE_TASKS;
             }
@@ -133,10 +170,10 @@ void APP_Tasks ( void )
             break;
         }
 
-        /* TODO: implement your application state machine.*/
+            /* TODO: implement your application state machine.*/
 
 
-        /* The default state should never be executed. */
+            /* The default state should never be executed. */
         default:
         {
             /* TODO: Handle error in application's state machine. */
