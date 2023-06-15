@@ -134,7 +134,7 @@ void APP_Tasks(void) {
             gfx_mono_print_scroll("iperf UDP server");
         }
         old_but2 = temp_but2;
-
+        
         static int old_but3 = 0;
         int temp_but3 = BUTTON3_Get();
         if (temp_but3 && !old_but3) {
